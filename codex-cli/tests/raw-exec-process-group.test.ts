@@ -20,9 +20,9 @@ import type { AppConfig } from "src/utils/config.js";
 
 describe("rawExec – abort kills entire process group", () => {
   it("terminates grandchildren spawned via bash", async () => {
-    if (process.platform === "win32") {
-      return;
-    }
+      if (process.platform === "win32") {
+        return;
+      }
 
     const abortController = new AbortController();
     // Bash script: spawn `sleep 30` in background, print its PID, then wait.
@@ -66,7 +66,7 @@ describe("rawExec – abort kills entire process group", () => {
  * Waits until a process no longer exists, or throws after timeout.
  * @param pid - The process ID to check
  * @throws {Error} If the process is still alive after 500ms
- */
+*/
 async function ensureProcessGone(pid: number) {
   const timeout = 500;
   const deadline = Date.now() + timeout;
