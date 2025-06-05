@@ -38,6 +38,23 @@ describe("parseApplyPatch", () => {
     ]);
   });
 
+  test("parses update with move operation", () => {
+    const patch = `*** Begin Patch\n*** Update File: old.txt\n*** Move to: new.txt\n@@\n-old\n+new\n*** End Patch`;
+
+    const ops = mustParse(patch);
+
+    expect(ops).toEqual([
+      {
+        type: "update",
+        path: "old.txt",
+        moveTo: "new.txt",
+        update: "@@\n-old\n+new",
+        added: 1,
+        deleted: 1,
+      },
+    ]);
+  });
+
   test("returns null for an invalid patch (missing prefix)", () => {
     const invalid = `*** Add File: foo.txt\n+bar\n*** End Patch`;
     expect(parseApplyPatch(invalid)).toBeNull();

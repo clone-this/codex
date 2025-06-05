@@ -15,6 +15,8 @@ export type ApplyPatchUpdateFileOp = {
   update: string;
   added: number;
   deleted: number;
+  /** Destination path when a file is renamed */
+  moveTo?: string;
 };
 
 export type ApplyPatchOp =
@@ -75,7 +77,17 @@ export function parseApplyPatch(patch: string): Array<ApplyPatchOp> | null {
         update: "",
         added: 0,
         deleted: 0,
+        moveTo: undefined,
       });
+      continue;
+    }
+
+    if (line.startsWith(MOVE_FILE_TO_PREFIX)) {
+      const lastOp = ops[ops.length - 1];
+      if (lastOp?.type !== "update") {
+        return null;
+      }
+      lastOp.moveTo = line.slice(MOVE_FILE_TO_PREFIX.length).trim();
       continue;
     }
 
