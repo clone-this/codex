@@ -119,12 +119,12 @@ export function exec(
       // First try graceful termination.
       killTarget("SIGTERM");
 
-      // Escalate to SIGKILL if the group refuses to die.
+      // Escalate to SIGKILL if the group refuses to die quickly.
       setTimeout(() => {
         if (!child.killed) {
           killTarget("SIGKILL");
         }
-      }, 2000).unref();
+      }, 200).unref();
     };
     if (abortSignal.aborted) {
       abortHandler();

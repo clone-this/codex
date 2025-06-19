@@ -15,6 +15,8 @@ export type ApplyPatchUpdateFileOp = {
   update: string;
   added: number;
   deleted: number;
+  /** Destination path when a file is renamed */
+  moveTo?: string;
 };
 
 export type ApplyPatchOp =
@@ -27,6 +29,7 @@ const PATCH_SUFFIX = "\n*** End Patch";
 const ADD_FILE_PREFIX = "*** Add File: ";
 const DELETE_FILE_PREFIX = "*** Delete File: ";
 const UPDATE_FILE_PREFIX = "*** Update File: ";
+const MOVE_FILE_TO_PREFIX = "*** Move to: ";
 const END_OF_FILE_PREFIX = "*** End of File";
 const HUNK_ADD_LINE_PREFIX = "+";
 
@@ -74,7 +77,17 @@ export function parseApplyPatch(patch: string): Array<ApplyPatchOp> | null {
         update: "",
         added: 0,
         deleted: 0,
+        moveTo: undefined,
       });
+      continue;
+    }
+
+    if (line.startsWith(MOVE_FILE_TO_PREFIX)) {
+      const lastOp = ops[ops.length - 1];
+      if (lastOp?.type !== "update") {
+        return null;
+      }
+      lastOp.moveTo = line.slice(MOVE_FILE_TO_PREFIX.length).trim();
       continue;
     }
 
